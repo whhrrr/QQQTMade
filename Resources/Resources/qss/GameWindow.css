@@ -1,0 +1,22 @@
+QWidget#GameWindow
+{
+    border-image: url(:/BirdGame/Resources/image/background.png);
+    border-width:0px;
+    border-radius:4px;
+}
+
+QLabel
+{
+    font-family:'Berlin Sans FB';
+    font-weight:bold;
+    font-size:48px;
+    color:rgb(25, 72, 25);
+}
+
+QPushButton#startBtn
+{
+    border-image: url(:/BirdGame/Resources/image/startButton.png);
+    border-width:2px;
+}
+
+
