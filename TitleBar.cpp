@@ -113,7 +113,7 @@ void TitleBar::paintEvent(QPaintEvent* event)
 	{
 		setFixedWidth(parentWidget()->width());
 	}
-
+	QWidget::paintEvent(event);//重绘事件
 }
 //双击响应事件实现标题栏进行最大化或最小化
 void TitleBar::mouseDoubleClickEvent(QMouseEvent* event)

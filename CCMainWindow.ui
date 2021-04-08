@@ -112,7 +112,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QPushButton" name="placehod1">
+         <widget class="QPushButton" name="palcehold1">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -137,7 +137,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="placehod2">
+         <widget class="QPushButton" name="placehold2">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
