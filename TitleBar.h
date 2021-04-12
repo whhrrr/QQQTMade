@@ -3,7 +3,7 @@
 /*
 * Make : whr
 * date：2021-3-5
-* Effect：标题栏头文件
+* Effect：标题栏头文件，继承自QWidget，与BasicWIndow基类联合使用
 */
 #include <QWidget>
 #include<QLabel>

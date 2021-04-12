@@ -1,7 +1,8 @@
 /*
 * Make : whr
 * date : 2021-3-5
-* Effect：作为其他窗口的基类
+* 功能：作为其他窗口的基类，内含鼠标移动事件以及基本的加载界面样式事件
+* 
 */
 #pragma once
 
@@ -33,10 +34,15 @@ protected:
 	void initTitleBar(ButtonType buttontype = MIN_BUTTON);	//初始化标题栏
 	void setTitleBarTitle(const QString& title, const QString& icon = "");//设置标题栏内容
 public slots:
+	//关闭
 	void onShowClose(bool);
+	//缩小
 	void onShowMin(bool);
+	//最小化
 	void onShowHide(bool);
+	//还原
 	void onShowNormal(bool);
+	//退出
 	void onShowQuit(bool);
 	void onSignalSkinChanged(const QColor& color);
 

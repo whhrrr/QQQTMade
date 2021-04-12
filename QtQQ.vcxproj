@@ -88,7 +88,13 @@
   <ItemGroup>
     <ClCompile Include="BasicWindow.cpp" />
     <ClCompile Include="CommonUtils.cpp" />
+    <ClCompile Include="ContactItem.cpp" />
+    <ClCompile Include="CustomMenu.cpp" />
     <ClCompile Include="NotifyManager.cpp" />
+    <ClCompile Include="QClickLabel.cpp" />
+    <ClCompile Include="RootContatItem.cpp" />
+    <ClCompile Include="SkinWindow.cpp" />
+    <ClCompile Include="SysTray.cpp" />
     <ClCompile Include="TitleBar.cpp" />
     <ClCompile Include="UserLogin.cpp" />
     <QtRcc Include="CCMainWindow.qrc" />
@@ -96,6 +102,8 @@
     <QtMoc Include="CCMainWindow.h" />
     <ClCompile Include="CCMainWindow.cpp" />
     <ClCompile Include="main.cpp" />
+    <QtUic Include="ContactItem.ui" />
+    <QtUic Include="SkinWindow.ui" />
     <QtUic Include="UserLogin.ui" />
   </ItemGroup>
   <ItemGroup>
@@ -109,6 +117,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommonUtils.h" />
+    <QtMoc Include="ContactItem.h" />
+    <QtMoc Include="RootContatItem.h" />
+    <QtMoc Include="CustomMenu.h" />
+    <QtMoc Include="SysTray.h" />
+    <QtMoc Include="QClickLabel.h" />
+    <QtMoc Include="SkinWindow.h" />
     <QtMoc Include="UserLogin.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
