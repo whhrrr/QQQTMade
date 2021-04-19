@@ -15,9 +15,11 @@
 BasicWindow::BasicWindow(QWidget *parent)
 	: QDialog(parent)
 {
+	//获得默认的颜色值
 	m_colorBackGround = CommonUtils::getDefaultSkinColor();
 	setWindowFlags(Qt::FramelessWindowHint);//窗口风格为无边框风格
 	setAttribute(Qt::WA_TranslucentBackground, true);	//透明效果
+	//发射更改皮肤信号，修改皮肤
 	connect(NotifyManager::getInstance(), SIGNAL(signalSkinChanged(const QColor&)),
 		this, SLOT(onSignalSkinChanged(const QColor&)));
 }
@@ -86,8 +88,8 @@ void BasicWindow::initBackGroundColor()
 	QStyleOption opt;
 	opt.init(this);	//当前部件获取风格选项
 
-	QPainter p(this);
-	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+	QPainter p(this);// 用this是 "当前"
+	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);// 图源, 风格
 }
 //子类化部件时，需要重写绘图事件设置背景颜色
 void BasicWindow::paintEvent(QPaintEvent* event) 

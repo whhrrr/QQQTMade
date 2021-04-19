@@ -1,4 +1,5 @@
 #include "TalkWindowShell.h"
+
 #include "CommonUtils.h"
 
 #include<QListWidget>
@@ -27,12 +28,35 @@ void TalkWindowShell::addTalkWindow(TalkWindow* talkWindow, TalkWindowItem* talk
 
 	aItem->setSelected(true);
 
+	talkWindowItem->setHeadPixmap("");//设置头像(无实现)
+	ui.listWidget->addItem(aItem);
+	ui.listWidget->setItemWidget(aItem, talkWindowItem);
+
+	onTalkWindowItemClicked(aItem);
+
+	connect(talkWindowItem, &TalkWindowItem::signalCloseClicked,
+		[talkWindowItem, talkWindow, aItem, this]() {
+			m_talkwindowItemMap.remove(aItem);
+			talkWindow->close();
+			ui.listWidget->takeItem(ui.listWidget->row(aItem));
+			delete talkWindowItem;
+			ui.rightStackedWidget->removeWidget(talkWindow);
+			if (ui.rightStackedWidget->count() < 1)
+			{
+				close();
+			}
+		});
 
 }
 
 void TalkWindowShell::setCurrentWidget(QWidget* widget)
 {
 	ui.rightStackedWidget->setCurrentWidget(widget);
+}
+
+const QMap<QListWidgetItem*, QWidget*>& TalkWindowShell::getTalkWindowItemMap() const
+{
+	return this->m_talkwindowItemMap;
 }
 
 void TalkWindowShell::onTalkWindowItemClicked(QListWidgetItem* item)

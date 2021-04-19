@@ -1,4 +1,5 @@
 #include "CCMainWindow.h"
+#include "CCMainWindow.h"
 #include<QProxyStyle>
 #include<QTimer>
 #include<QHBoxLayout>

@@ -14,7 +14,7 @@ public:
 	TalkWindowItem(QWidget *parent = Q_NULLPTR);
 	~TalkWindowItem();
 
-	void setHeadPixmap(const QPixmap& pixmap);
+	void setHeadPixmap(const QString& pixmap);
 
 	void setMsgLabelContent(const QString& msg);
 	QString getMsgLabelText();

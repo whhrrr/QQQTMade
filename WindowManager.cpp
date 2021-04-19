@@ -1,4 +1,4 @@
-#include "WindowManager.h"
+	#include "WindowManager.h"
 #include"TalkWindowItem.h"
 #include"TalkWindow.h"
 // 单例模式，创建全局静态对象
@@ -103,13 +103,18 @@ void WindowManager::addNewTalkWindow(const QString& uid, GroupType groupType, co
 			break;
 		}
 		}
+		m_talkWindowshell->addTalkWindow(talkWindow, talkWindowItem, groupType);
 	}
 	else 
 	{
+		//左侧聊天窗口设置为选中
+		QListWidgetItem* item = m_talkWindowshell->getTalkWindowItemMap().key(widget);
+		item->setSelected(true);
+		//设置右侧当前聊天窗口
 		m_talkWindowshell->setCurrentWidget(widget);
 	}
 	m_talkWindowshell->show();
-	m_talkWindowshell->activateWindow();//设为活动窗体
+	m_talkWindowshell->activateWindow();			// 设置为活动窗体
 }
 
 
