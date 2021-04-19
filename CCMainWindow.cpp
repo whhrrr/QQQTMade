@@ -1,19 +1,20 @@
 #include "CCMainWindow.h"
 #include<QProxyStyle>
-#include<QPainter>
-#include<QBoxLayout>
 #include<QTimer>
 #include<QHBoxLayout>
 #include<QEvent>
 #include<QTreeWidgetItem>
+#include<QMouseEvent>
+#include<QApplication>
 
+#include"WindowManager.h"
 #include "SkinWindow.h"
 #include "SysTray.h"
 #include "NotifyManager.h"
 #include "RootContatItem.h"
 #include "ContactItem.h"
-
-class CustomProxyStyle :public QProxyStyle 
+#include "TalkWindowShell.h"
+class CCMainCustomProxyStyle:public QProxyStyle 
 {
 public:
 
@@ -48,7 +49,7 @@ CCMainWindow::~CCMainWindow()
 void CCMainWindow::initControl()
 {
     //取消树获取焦点时绘制的边框
-    ui.treeWidget->setStyle(new CustomProxyStyle);
+    ui.treeWidget->setStyle(new CCMainCustomProxyStyle);
     setLevelPixmap(0);
     setHeadPixmap(":/Resources/MainWindow/girl.png");
     setStatusMenuIcon(":/Resources/MainWindow/StatusSucceeded.png");
@@ -225,6 +226,21 @@ bool CCMainWindow::eventFilter(QObject* obj, QEvent* event)
     }
     return false;
 }
+//鼠标按下事件
+void CCMainWindow::mousePressEvent(QMouseEvent* event)
+{
+    //鼠标不在搜索栏且搜索栏有焦点
+    if (qApp->widgetAt(event->pos()) != ui.searchLineEdit && ui.searchLineEdit->hasFocus()) 
+    {
+        ui.searchLineEdit->clearFocus();//清除焦点
+    }
+    else if (qApp->widgetAt(event->pos()) != ui.lineEdit && ui.lineEdit->hasFocus())
+    {
+        ui.lineEdit->clearFocus();//清除焦点
+    }
+
+    BasicWindow::mousePressEvent(event);
+}
 //更新搜索样式
 void CCMainWindow::updateSearchStyle()
 {
@@ -235,20 +251,20 @@ void CCMainWindow::updateSearchStyle()
                                                     .arg(m_colorBackGround.green())
                                                     .arg(m_colorBackGround.blue()));
 }
-
+//初始化联系人
 void CCMainWindow::initContactTree()
 {
     //展开与收缩时信号
     connect(ui.treeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), this, SLOT(onItemClicked(QTreeWidgetItem*, int)));
-    connect(ui.treeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*, int)), this, SLOT(onItemExpanded(QTreeWidgetItem*)));
-    connect(ui.treeWidget, SIGNAL(itemCollapsed(QTreeWidgetItem*, int)), this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
+    connect(ui.treeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(onItemExpanded(QTreeWidgetItem*)));
+    connect(ui.treeWidget, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(onItemCollapsed(QTreeWidgetItem*)));
     connect(ui.treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(onItemDoubleClicked(QTreeWidgetItem*, int)));
 
     //根节点
     QTreeWidgetItem* pRootGroupItem = new QTreeWidgetItem;
     //设置子项显示策略
     pRootGroupItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);//策略为一直显示
-    pRootGroupItem->setData(0, Qt::UserRole, 0);
+    pRootGroupItem->setData(0, Qt::UserRole, 0);//根项数据设为0
 
     RootContatItem* pItemName = new RootContatItem(true, ui.treeWidget);
     QString strGroupName = QString::fromLocal8Bit("奇牛科技");//将字符串由本地编码转化成Unico编码
@@ -275,16 +291,65 @@ void CCMainWindow::initContactTree()
 void CCMainWindow::onItemClicked(QTreeWidgetItem* item, int column)
 {   
     //判断是否有子项，有的话展开，没有的话不用展开
-    bool bIsChild = item
+    bool bIsChild = item->data(0, Qt::UserRole).toBool();
+    if (!bIsChild) 
+    {
+        item->setExpanded(!item->isExpanded());//未展开则展开子项
+    }
 }
 void CCMainWindow::onItemExpanded(QTreeWidgetItem* item)
 {
+    bool bIsChild = item->data(0, Qt::UserRole).toBool();
+    if(!bIsChild)
+    {
+        //将基类对象指针或引用转换到继承类指针
+        RootContatItem* prootItem = dynamic_cast<RootContatItem *> (ui.treeWidget->itemWidget(item, 0));//强制转化
+        if (prootItem) //判断有效
+        {
+            prootItem->setExpanded(true);
+        }
+    }
 }
 void CCMainWindow::onItemCollapsed(QTreeWidgetItem* item)
 {
+    bool bIsChild = item->data(0, Qt::UserRole).toBool();
+    if (!bIsChild)
+    {
+        //将基类对象指针或引用转换到继承类指针
+        RootContatItem* prootItem = dynamic_cast<RootContatItem*> (ui.treeWidget->itemWidget(item, 0));//强制转化
+        if (prootItem) //判断有效
+        {
+            prootItem->setExpanded(false);
+        }
+    }
 }
 void CCMainWindow::onItemDoubleClicked(QTreeWidgetItem* item, int column)
 {
+    bool bIsChild = item->data(0, Qt::UserRole).toBool();//如果是子项
+    if (bIsChild)
+    {
+        QString strGroup = m_groupMap.value(item);
+        if (strGroup == QString::fromLocal8Bit("公司群"))
+        {
+            //第一个参数作为创建窗口时唯一识别号
+            WindowManager::getInstance()->addNewTalkWindow(item->data(0,Qt::UserRole + 1).toString(),COMPANY);
+        }
+        else if (strGroup == QString::fromLocal8Bit("人事部"))
+        {
+            WindowManager::getInstance()->addNewTalkWindow(item->data(0, Qt::UserRole + 1).toString(), PERSONELGROUP);
+        }
+        else if (strGroup == QString::fromLocal8Bit("市场部")) 
+        {
+            WindowManager::getInstance()->addNewTalkWindow(item->data(0, Qt::UserRole + 1).toString(), MARKETGROUP);
+        }
+        else if (strGroup == QString::fromLocal8Bit("研发部")) 
+        {
+            WindowManager::getInstance()->addNewTalkWindow(item->data(0, Qt::UserRole + 1).toString(), DEVELOPMENTGROUP);
+        }
+
+
+    }
+    
 }
 
 void CCMainWindow::addCompanyDeps(QTreeWidgetItem* pRootGroupItem, const QString& sDeps)
@@ -295,12 +360,15 @@ void CCMainWindow::addCompanyDeps(QTreeWidgetItem* pRootGroupItem, const QString
     QPixmap pix;
     pix.load(":/Resources/MainWindow/head_mask.png");
     //添加子节点
-    pChild->setData(0, Qt::UserRole, 1);
+    pChild->setData(0, Qt::UserRole, 1);//子项数据设为1
+    //给UserRole + 1对象设置了数据，用作窗口唯一识别号
+    pChild->setData(0, Qt::UserRole + 1, QString::number((int)pChild));
+    
     ContactItem* pContactItem = new ContactItem(ui.treeWidget);
     pContactItem->setHeadPixmap(getRoundImage(QPixmap(":/Resources/MainWindow/girl.png"),pix,pContactItem->getHeadLabelSize()));
     pContactItem->setUserName(sDeps);
 
     pRootGroupItem->addChild(pChild);
     ui.treeWidget->setItemWidget(pChild, 0, pContactItem);
-
+    m_groupMap.insert(pChild, sDeps);
 }
