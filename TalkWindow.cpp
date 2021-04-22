@@ -16,6 +16,7 @@ TalkWindow::TalkWindow(QWidget* parent, const QString& uid = 0, GroupType groupT
 
 TalkWindow::~TalkWindow()
 {
+	WindowManager::getInstance()->deleteWindowName(m_talkId);
 }
 
 void TalkWindow::addEmotionImage(int emotionNum)
@@ -31,8 +32,14 @@ void TalkWindow::onSendBtnClicked()
 {
 
 }
-void TalkWindow::onItemDoubleClicked(QTreeWidgetItem*, int)
+void TalkWindow::onItemDoubleClicked(QTreeWidgetItem* item, int column)
 {
+	bool bIsChild = item->data(0, Qt::UserRole).toBool();
+	if (bIsChild) 
+	{
+		QString strPeopleName = m_groupPeopleMap.value(item);//获取人名
+		WindowManager::getInstance()->addNewTalkWindow(item->data(0,Qt::UserRole+1).toString(), PTOP, strPeopleName);
+	}
 }
 void TalkWindow::initControl()
 {

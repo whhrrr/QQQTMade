@@ -95,7 +95,7 @@ void WindowManager::addNewTalkWindow(const QString& uid, GroupType groupType, co
 		{
 			// 暂时不设置标题名字，左侧标签就设置对方的名字
 			talkWindow->setWindowName(QStringLiteral(""));
-			talkWindowItem->setMsgLabelContent(QStringLiteral("公司群"));
+			talkWindowItem->setMsgLabelContent(strPeople);
 			break;
 		}
 		default: 

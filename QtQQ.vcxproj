@@ -43,12 +43,13 @@
     <Import Project="$(QtMsBuild)\qt_defaults.props" />
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <IncludePath>$(IncludePath);$(SolutionDir)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>msvc64</QtInstall>
-    <QtModules>core;gui;widgets</QtModules>
+    <QtModules>core;gui;network;sql;webchannel;webengine;webenginewidgets;websockets;widgets;xml</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
@@ -92,8 +93,10 @@
     <ClCompile Include="CustomMenu.cpp" />
     <ClCompile Include="EmotionLabelItem.cpp" />
     <ClCompile Include="EmotionWindow.cpp" />
+    <ClCompile Include="MsgWebView.cpp" />
     <ClCompile Include="NotifyManager.cpp" />
     <ClCompile Include="QClickLabel.cpp" />
+    <ClCompile Include="QMsgTextEdit.cpp" />
     <ClCompile Include="RootContatItem.cpp" />
     <ClCompile Include="SkinWindow.cpp" />
     <ClCompile Include="SysTray.cpp" />
@@ -127,6 +130,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommonUtils.h" />
+    <QtMoc Include="MsgWebView.h" />
+    <QtMoc Include="QMsgTextEdit.h" />
     <QtMoc Include="WindowManager.h" />
     <QtMoc Include="TalkWindow.h" />
     <QtMoc Include="TalkWindowShell.h" />

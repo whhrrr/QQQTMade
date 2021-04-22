@@ -17,15 +17,14 @@ public:
 
 private slots:
 	void onSendBtnClicked();
-	void onItemDoubleClicked(QTreeWidgetItem*, int);
+	void onItemDoubleClicked(QTreeWidgetItem* item, int column);
 private:
-	void initControl();
+	void initControl();//初始化控件
 	void initCompanyTalk();//初始化公司群聊天
 	void initPersonelTalk();//初始化人事部聊天
 	void initMarketTalk();//初始化市场部聊天
 	void initDevelopTalk();//初始化研发部聊天
 	void initPtoPTalk();//初始化单独聊天
-
 	void addPeopleInfo(QTreeWidgetItem* pRootGroupItem);//添加名称
 private:
 	Ui::TalkWindow ui;
