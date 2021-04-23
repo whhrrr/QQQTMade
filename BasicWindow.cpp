@@ -140,7 +140,7 @@ void BasicWindow::onShowHide(bool)
 }
 void BasicWindow::onShowNormal(bool)
 {
-	show();
+	show();			 //直接显示
 	activateWindow();//将包含此小部件的顶级小部件设置为活动窗口。
 }
 void BasicWindow::onShowQuit(bool) 
@@ -165,7 +165,7 @@ void BasicWindow::mousePressEvent(QMouseEvent* event)
 		//pos()事件发生时相当于窗口左下角(0,0)的偏移 
 		m_mousePressed = true;
 		mousePoint = event->globalPos() - pos();//减去坐标值
-		event->accept();
+		event->accept();	//接受
 	}
 }
 
