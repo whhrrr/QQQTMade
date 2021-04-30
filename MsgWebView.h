@@ -13,8 +13,11 @@
 class MsgHtmlObj :public QObject 
 {
 	Q_OBJECT
+	// 动态属性
+	//（属性类型，属性名称，类成员，属性的类成员，信号，触发信号）
+	// m_msgLHtmlTmpl 和 m_msgRHtmlTmpl ，在下面要 定义才可以
 	Q_PROPERTY(QString msgLHtmlTmpl MEMBER m_msgLHtmlTmpl NOTIFY signalMsgHtml)
-	Q_PROPERTY(QString msgLHtmlTmpl MEMBER m_msgRHtmlTmpl NOTIFY signalMsgHtml)
+	Q_PROPERTY(QString msgRHtmlTmpl MEMBER m_msgRHtmlTmpl NOTIFY signalMsgHtml)
 public:
 	MsgHtmlObj(QObject* parent);
 signals:
@@ -30,7 +33,7 @@ private:
 };
 
 /*
-* 功能:重写网页类声明
+* 功能:重写网页类声明.接收的网页，只接受 qrc资源里面的类型
 */
 class MsgWebPage :public QWebEnginePage 
 {

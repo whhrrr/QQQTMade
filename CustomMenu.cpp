@@ -16,6 +16,8 @@ CustomMenu::~CustomMenu()
 
 void CustomMenu::addCustomMenu(const QString& text, const QString& icon, const QString& name)
 {	
+	//创建动作按钮
+	//通过图标 和 文本的形式添加
 	QAction* pAction = addAction(QIcon(icon), name);
 	m_menuActionMap.insert(text, pAction);
 }

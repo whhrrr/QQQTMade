@@ -49,7 +49,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>msvc64</QtInstall>
-    <QtModules>core;gui;network;sql;webchannel;webengine;webenginewidgets;websockets;widgets;xml</QtModules>
+    <QtModules>core;gui;location;network;networkauth;quick;quickwidgets;sql;uitools;webchannel;webengine;webenginewidgets;websockets;widgets;xml</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">

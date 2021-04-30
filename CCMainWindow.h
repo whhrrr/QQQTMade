@@ -28,7 +28,7 @@ private:
     //更新搜索样式
     void updateSearchStyle();
     //添加公司部门
-    void addCompanyDeps(QTreeWidgetItem* pRootGroupItem,const QString& sDeps);
+    void addCompanyDeps(QTreeWidgetItem* pRootGroupItem, int DepID);
     //初始化
     void initControl();
     //初始化计时器
@@ -49,5 +49,5 @@ private slots:
 
 private:
     Ui::CCMainWindowClass ui;
-    QMap<QTreeWidgetItem*, QString> m_groupMap;//所有分组的分组项
+    //QMap<QTreeWidgetItem*, QString> m_groupMap;//所有分组的分组项
 };

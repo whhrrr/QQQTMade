@@ -1,6 +1,8 @@
 	#include "WindowManager.h"
 #include"TalkWindowItem.h"
 #include"TalkWindow.h"
+#include <QSqlQueryModel>
+#include <QModelIndex>
 // 单例模式，创建全局静态对象
 Q_GLOBAL_STATIC(WindowManager, theInstance);
 
@@ -44,7 +46,7 @@ WindowManager* WindowManager::getInstance()
 	return theInstance;
 }
 
-void WindowManager::addNewTalkWindow(const QString& uid, GroupType groupType, const QString& strPeople)
+void WindowManager::addNewTalkWindow(const QString& uid)
 {
 	if (m_talkWindowshell == nullptr) 
 	{
@@ -62,9 +64,33 @@ void WindowManager::addNewTalkWindow(const QString& uid, GroupType groupType, co
 	QWidget* widget = findWindowName(uid);
 	if (!widget)
 	{
-		TalkWindow* talkWindow = new TalkWindow(m_talkWindowshell,uid,groupType);
+		TalkWindow* talkWindow = new TalkWindow(m_talkWindowshell,uid);
 		TalkWindowItem* talkWindowItem = new TalkWindowItem(talkWindow);
 
+		//判断是群聊还是单聊
+		QSqlQueryModel sqlDepModel;
+		QString strSql = QString("SELECT department_name,sign FROM tab_department WHERE departmentID = %1").arg(uid);
+		sqlDepModel.setQuery(strSql);//查询模型设置sql语句
+		int rows = sqlDepModel.rowCount();//进行行计数
+
+		QString strWindowName, strMsgLabel;
+
+		if(rows == 0)//单聊
+		{
+			QString sql = QString("SELECT employee_name,employee_sign FROM tab_employees WHERE employeeID = %1")
+				.arg(uid);
+			sqlDepModel.setQuery(sql);
+		}
+		QModelIndex indexDepIndex, signIndex;
+		indexDepIndex = sqlDepModel.index(0, 0);//部门索引 0行0列
+		signIndex = sqlDepModel.index(0, 1);//ID索引 0行1列
+
+		strWindowName = sqlDepModel.data(signIndex).toString();
+		strMsgLabel = sqlDepModel.data(indexDepIndex).toString();
+		talkWindow->setWindowName(strWindowName);//窗口名称
+		talkWindowItem->setMsgLabelContent(strMsgLabel);//左侧联系人文本显示
+		m_talkWindowshell->addTalkWindow(talkWindow, talkWindowItem,uid);
+		/*
 		switch (groupType) 
 		{
 		case COMPANY: 
@@ -103,7 +129,8 @@ void WindowManager::addNewTalkWindow(const QString& uid, GroupType groupType, co
 			break;
 		}
 		}
-		m_talkWindowshell->addTalkWindow(talkWindow, talkWindowItem, groupType);
+		m_talkWindowshell->addTalkWindow(talkWindow, talkWindowItem, groupType); 
+		*/
 	}
 	else 
 	{

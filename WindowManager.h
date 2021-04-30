@@ -17,7 +17,7 @@ public:
 	void addWindowName(const QString& qsWindowName, QWidget* qWidget);
 
 	static WindowManager* getInstance();//»ñÈ¡ÊµÀý
-	void addNewTalkWindow(const QString& uid,GroupType groupType = COMPANY,const QString& strPeople = "");
+	void addNewTalkWindow(const QString& uid);
 private:
 	TalkWindowShell* m_talkWindowshell;
 	QMap<QString, QWidget*> m_windowMap;

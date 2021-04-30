@@ -28,7 +28,7 @@ public:
 
 public:
 	//添加新的聊天窗口(两种情况:公司聊天或同事一对一聊天)
-	void addTalkWindow(TalkWindow* talkWindow, TalkWindowItem* talkWindowItem,GroupType grouptype);
+	void addTalkWindow(TalkWindow* talkWindow, TalkWindowItem* talkWindowItem, const QString& uid);
 	//设置当前聊天窗口
 	void setCurrentWidget(QWidget* widget);
 	const QMap<QListWidgetItem*, QWidget*>& getTalkWindowItemMap() const;

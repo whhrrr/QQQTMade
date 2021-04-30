@@ -1,20 +1,23 @@
 #include "CCMainWindow.h"
 #include "CCMainWindow.h"
-#include<QProxyStyle>
-#include<QTimer>
-#include<QHBoxLayout>
-#include<QEvent>
-#include<QTreeWidgetItem>
-#include<QMouseEvent>
-#include<QApplication>
+#include <QProxyStyle>
+#include <QTimer>
+#include <QHBoxLayout>
+#include <QEvent>
+#include <QTreeWidgetItem>
+#include <QMouseEvent>
+#include <QApplication>
+#include <QSqlQuery>
 
-#include"WindowManager.h"
+#include "WindowManager.h"
 #include "SkinWindow.h"
 #include "SysTray.h"
 #include "NotifyManager.h"
 #include "RootContatItem.h"
 #include "ContactItem.h"
 #include "TalkWindowShell.h"
+extern QString gLoginEmployeeID;//全局变量，保存登录者部门编号
+
 class CCMainCustomProxyStyle:public QProxyStyle 
 {
 public:
@@ -266,15 +269,31 @@ void CCMainWindow::initContactTree()
     //设置子项显示策略
     pRootGroupItem->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);//策略为一直显示
     pRootGroupItem->setData(0, Qt::UserRole, 0);//根项数据设为0
-
     RootContatItem* pItemName = new RootContatItem(true, ui.treeWidget);
+    //获取公司部门ID
+    QSqlQuery queryComDepID(QString("SELECT departmentID FROM tab_department WHERE department_name = \"%1\"")
+        .arg(QString::fromLocal8Bit("公司群")));
+    queryComDepID.exec();//执行sql语句
+    queryComDepID.first();
+    int ComDepID = queryComDepID.value(0).toInt();
+    //获得登陆者所在部门ID
+    QSqlQuery querySelfDepID(QString("SELECT departmentID FROM tab_employees WHERE employeeID = %1")
+        .arg(gLoginEmployeeID));
+    querySelfDepID.exec();//执行sql语句
+    querySelfDepID.first();
+    int SelfDepID = querySelfDepID.value(0).toInt();
+
+    //初始化公司群及登录者所在群
+    addCompanyDeps(pRootGroupItem, ComDepID);
+    addCompanyDeps(pRootGroupItem, SelfDepID);
+
     QString strGroupName = QString::fromLocal8Bit("奇牛科技");//将字符串由本地编码转化成Unico编码
     pItemName->setText(strGroupName);
-    
+
     //插入分组结点
     ui.treeWidget->addTopLevelItem(pRootGroupItem);
-    ui.treeWidget->setItemWidget(pRootGroupItem, 0, pItemName);
-
+    ui.treeWidget->setItemWidget(pRootGroupItem, 0, pItemName); 
+    /*在没有数据库情况下添加公司群
     QStringList sCompDeps;//公司部门
     sCompDeps << QString::fromLocal8Bit("公司群");
     sCompDeps << QString::fromLocal8Bit("人事部");
@@ -285,8 +304,7 @@ void CCMainWindow::initContactTree()
     {
         addCompanyDeps(pRootGroupItem, sCompDeps.at(nIndex));
     }
-
-
+    */
 }
 
 void CCMainWindow::onItemClicked(QTreeWidgetItem* item, int column)
@@ -329,7 +347,7 @@ void CCMainWindow::onItemDoubleClicked(QTreeWidgetItem* item, int column)
     bool bIsChild = item->data(0, Qt::UserRole).toBool();//如果是子项
     if (bIsChild)
     {
-        QString strGroup = m_groupMap.value(item);
+     /*  QString strGroup = m_groupMap.value(item);
         if (strGroup == QString::fromLocal8Bit("公司群"))
         {
             //第一个参数作为创建窗口时唯一识别号
@@ -347,13 +365,13 @@ void CCMainWindow::onItemDoubleClicked(QTreeWidgetItem* item, int column)
         {
             WindowManager::getInstance()->addNewTalkWindow(item->data(0, Qt::UserRole + 1).toString(), DEVELOPMENTGROUP);
         }
-
-
+      */
+        WindowManager::getInstance()->addNewTalkWindow(item->data(0, Qt::UserRole + 1).toString());
     }
     
 }
 
-void CCMainWindow::addCompanyDeps(QTreeWidgetItem* pRootGroupItem, const QString& sDeps)
+void CCMainWindow::addCompanyDeps(QTreeWidgetItem* pRootGroupItem, int DepID)
 {
     QTreeWidgetItem* pChild = new QTreeWidgetItem;
 
@@ -363,13 +381,27 @@ void CCMainWindow::addCompanyDeps(QTreeWidgetItem* pRootGroupItem, const QString
     //添加子节点
     pChild->setData(0, Qt::UserRole, 1);//子项数据设为1
     //给UserRole + 1对象设置了数据，用作窗口唯一识别号
-    pChild->setData(0, Qt::UserRole + 1, QString::number((int)pChild));
-    
+    pChild->setData(0, Qt::UserRole + 1, DepID);
+    //获取公司部门头像
+    QPixmap groupPix;
+    QSqlQuery queryPicture(QString("SELECT picture FROM tab_department WHERE departmentID = %1")
+        .arg(DepID));
+    queryPicture.exec();
+    queryPicture.first();
+    groupPix.load(queryPicture.value(0).toString());
+    //获取部门名称
+    QString strDepName;
+    QSqlQuery queryDepName(QString("SELECT department_name FROM tab_department WHERE departmentID = %1")
+        .arg(DepID));
+    queryDepName.exec();
+    queryDepName.first();
+    strDepName = queryDepName.value(0).toString();
+
     ContactItem* pContactItem = new ContactItem(ui.treeWidget);
     pContactItem->setHeadPixmap(getRoundImage(QPixmap(":/Resources/MainWindow/girl.png"),pix,pContactItem->getHeadLabelSize()));
-    pContactItem->setUserName(sDeps);
+    pContactItem->setUserName(strDepName);
 
     pRootGroupItem->addChild(pChild);
     ui.treeWidget->setItemWidget(pChild, 0, pContactItem);
-    m_groupMap.insert(pChild, sDeps);
+  /*  m_groupMap.insert(pChild, sDeps);*/
 }

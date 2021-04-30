@@ -9,14 +9,14 @@ class TalkWindow : public QWidget
 	Q_OBJECT
 
 public:
-	TalkWindow(QWidget* parent, const QString& uid, GroupType groupType);
+	TalkWindow(QWidget* parent, const QString& uid);
 	~TalkWindow();
 public:
 	void addEmotionImage(int emotionNum);
 	void setWindowName(const QString& name);//设置窗口名称
 
 private slots:
-	void onSendBtnClicked();
+	void onSendBtnClicked(bool );
 	void onItemDoubleClicked(QTreeWidgetItem* item, int column);
 private:
 	void initControl();//初始化控件
@@ -29,7 +29,7 @@ private:
 private:
 	Ui::TalkWindow ui;
 	QString m_talkId;//保存当前聊天窗口ID
-	GroupType m_groupType;//保存分组类型
+	//GroupType m_groupType;//保存分组类型
 	QMap<QTreeWidgetItem*, QString> m_groupPeopleMap;//所有分组联系人姓名
 
 };

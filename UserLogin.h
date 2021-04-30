@@ -18,6 +18,8 @@ private slots:
 	void onLoginBtnClicked();
 private:
 	void initControl();
+	bool connectMysql();//连接数据库返回是否成功
+	bool veryfyAccountCode();//验证账号密码
 private:
 	Ui::UserLogin ui;
 };

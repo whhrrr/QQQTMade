@@ -16,6 +16,7 @@ QPixmap CommonUtils::getRoundImage(const QPixmap& src,QPixmap &mask,QSize masksi
 		masksize = mask.size();
 	}
 	else {
+		//scaled 缩放
 		mask = mask.scaled(masksize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 	}
 	QImage resultImage(masksize, QImage::Format_ARGB32_Premultiplied);
@@ -44,6 +45,7 @@ void CommonUtils::loadStyleSheet(QWidget* widget, const QString& sheetName)
 
 void CommonUtils::setDefaultSkinColor(const QColor& color) 
 {
+	// applicationDirPath() 目标路径
 	const  QString&& path = QApplication::applicationDirPath() + "/" + QString("tradeprintinfo.ini");
 	QSettings settings(path, QSettings::IniFormat);//对操作文件进行读写操作
 	//设置默认颜色
