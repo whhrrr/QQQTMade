@@ -11,7 +11,7 @@ class CCMainWindow : public BasicWindow
     Q_OBJECT
 
 public:
-    CCMainWindow(QWidget *parent = Q_NULLPTR);
+    CCMainWindow(QString account,bool isAccountLogin,QWidget *parent = Q_NULLPTR);//isAccountLogin判定是否为qq号
     ~CCMainWindow();
 public:
     void setUserName(const QString& username);//设置用户名称
@@ -33,6 +33,8 @@ private:
     void initControl();
     //初始化计时器
     void initTimer();
+    //获取头像路径
+    QString getHeadPicturePath();
 private:
     void resizeEvent(QResizeEvent* event);
     bool eventFilter(QObject* obj, QEvent* event);
@@ -49,5 +51,7 @@ private slots:
 
 private:
     Ui::CCMainWindowClass ui;
+    bool m_isAccountLogin;//判断登录账号还是qq号
+    QString m_account;//账号保存
     //QMap<QTreeWidgetItem*, QString> m_groupMap;//所有分组的分组项
 };

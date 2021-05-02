@@ -36,12 +36,15 @@ public:
     }
 };
 
-CCMainWindow::CCMainWindow(QWidget *parent)
+CCMainWindow::CCMainWindow(QString account, bool isAccountLogin, QWidget* parent)
     : BasicWindow(parent)
+    , m_isAccountLogin(isAccountLogin)
+    , m_account(account)
 {
     ui.setupUi(this);
     setWindowFlags(windowFlags() | Qt::Tool);
     loadStyleSheet("CCMainWindow");
+    setHeadPixmap(getHeadPicturePath());
     initControl();
     initTimer();
 }
@@ -55,7 +58,8 @@ void CCMainWindow::initControl()
     //取消树获取焦点时绘制的边框
     ui.treeWidget->setStyle(new CCMainCustomProxyStyle);
     setLevelPixmap(0);
-    setHeadPixmap(":/Resources/MainWindow/girl.png");
+    
+    //setHeadPixmap(":/Resources/MainWindow/girl.png");
     setStatusMenuIcon(":/Resources/MainWindow/StatusSucceeded.png");
     
     QHBoxLayout* appupLayout = new QHBoxLayout;//构造水平布局管理器
@@ -118,6 +122,39 @@ void CCMainWindow::initTimer()
         setLevelPixmap(level);
         });//连接信号与槽，过500ms提高等级
     timer->start();
+}
+QString CCMainWindow::getHeadPicturePath()
+{
+    QString strPicPath;
+    if (!m_isAccountLogin) //qq号登录
+    {
+        QSqlQuery queryPic(QString("SELECT picture FROM tab_employees WHERE employeeID = %1")
+            .arg(gLoginEmployeeID));
+        queryPic.exec();
+        queryPic.next();			// 指向结果集的第一条记录
+
+        strPicPath = queryPic.value(0).toString();
+    }
+    else//账号登录
+    {
+        //再获取账号之前，先拿到 account账号
+            // 然后 再通过 account 去获得 employeeID
+        QSqlQuery queryEmployeeID(QString("SELECT employeeID FROM tab_accounts WHERE account = '%1'")
+                .arg(m_account));
+        queryEmployeeID.exec();
+        queryEmployeeID.next();
+        int employeeID = queryEmployeeID.value(0).toInt();
+
+        // 再拿 employeeID 获取头像路径
+        QSqlQuery queryPic(QString("SELECT picture FROM tab_employees WHERE employeeID = %1")
+            .arg(employeeID));
+        queryPic.exec();
+        queryPic.next();			// 指向结果集的第一条记录
+
+        strPicPath = queryPic.value(0).toString();
+    }
+
+    return strPicPath;
 }
 void CCMainWindow::setUserName(const QString& username)//设置用户名称
 {

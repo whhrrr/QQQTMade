@@ -27,7 +27,7 @@ void UserLogin::initControl()
 	QLabel* headlabel = new QLabel(this);
 	headlabel->setFixedSize(68, 68);
 	QPixmap pix(":/Resources/MainWindow/head_mask.png");
-	headlabel->setPixmap(getRoundImage(QPixmap(":/Resources/MainWindow/girl.png"), pix, headlabel->size()));
+	headlabel->setPixmap(getRoundImage(QPixmap(":/Resources/MainWindow/app/logo.ico"), pix, headlabel->size()));
 	headlabel->move(width() / 2 - 34, ui.titleWidget->height() - 34);
 	connect(ui.loginBtn, &QPushButton::clicked, this, &UserLogin::onLoginBtnClicked);
 	//Á¬½ÓÊý¾Ý¿âÊ§°Ü
@@ -59,7 +59,7 @@ bool UserLogin::connectMysql()
 	}
 }
 
-bool UserLogin::veryfyAccountCode()
+bool UserLogin::veryfyAccountCode(bool& isAccountLogin, QString& strAccount)
 {
 	QString strAccountInput = ui.editUserAccount->text();
 	QString strCodeInput = ui.editPassword->text();
@@ -75,9 +75,12 @@ bool UserLogin::veryfyAccountCode()
 		if (strCode == strCodeInput)
 		{
 			gLoginEmployeeID = strAccountInput;
+			isAccountLogin = false;//È·ÈÏÊÇ·ñÎªÕËºÅµÇÂ¼
+			strAccount = strAccountInput;//±£´æµÇÂ½µÄÕËºÅ
 			return true;
 		}
 		else {
+
 			return false;
 		}
 	}
@@ -92,28 +95,30 @@ bool UserLogin::veryfyAccountCode()
 		if (strCode == strCodeInput) 
 		{
 			gLoginEmployeeID = queryAccount.value(1).toString();
+			isAccountLogin = true;//È·ÈÏÊÇ·ñÎªÕÊºÅµÇÂ¼
+			strAccount = strAccountInput;//±£´æÊäÈëµÄÕËºÅ
 			return true;
 		}
 		else {
 			return false;
 		}
 	}
-
-
 	return false;
 }
 
 
 void UserLogin::onLoginBtnClicked() 
 {
-	if (!veryfyAccountCode()) 
+	bool isAccountLogin;
+	QString strAccount;//ÕËºÅ»òqqºÅ
+	if (!veryfyAccountCode(isAccountLogin, strAccount))
 	{
-		QMessageBox::warning(NULL, QString::fromLocal8Bit("ÕËºÅÃÜÂëÓÐÎó"),
+		QMessageBox::information(NULL, QString::fromLocal8Bit("ÕËºÅÃÜÂëÓÐÎó"),
 			QString::fromLocal8Bit("ÄúÊäÈëµÄÕËºÅÃÜÂëÓÐÎó,ÖØÐÂÊäÈë"));
 		ui.editPassword->setText("");
 		return;
 	}
 	close();
-	CCMainWindow* mainWindow = new CCMainWindow;
+	CCMainWindow* mainWindow = new CCMainWindow(strAccount,isAccountLogin);
 	mainWindow->show();
 }
