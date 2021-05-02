@@ -1,6 +1,6 @@
 #pragma once
 /*
-* 功能：获取默认的部件风格以及设置部件风格
+* 功能：获取默认的部件风格以及设置部件风格(设置颜色)
 */
 #include<QProxyStyle>
 #include<QPixmap>

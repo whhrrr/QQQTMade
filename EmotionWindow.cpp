@@ -2,8 +2,10 @@
 #include "CommonUtils.h"
 #include<QPainter>
 #include "QStyleOption"
+
 const int emotionColumn = 14;
 const int emotionRow = 12;
+
 EmotionWindow::EmotionWindow(QWidget *parent)
 	: QWidget(parent)
 {

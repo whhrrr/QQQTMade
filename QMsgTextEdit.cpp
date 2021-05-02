@@ -9,6 +9,7 @@ QMsgTextEdit::QMsgTextEdit(QWidget *parent)
 
 QMsgTextEdit::~QMsgTextEdit()
 {
+	//删除所有图片
 	this->deletAllEmotionImage();
 }
 
@@ -41,13 +42,15 @@ void QMsgTextEdit::addEmotionUrl(int emotionNum)
 	{
 		m_listEmotionUrl.append(imageName);
 	}
-	//动图
+	//表情映射管理
 	QMovie* apngMovie = new QMovie(imageName, "apng", this);
-	//添加表情映射
+	// 添加到表情映射里，参数（插入谁，名字）
 	m_emotionMap.insert(apngMovie, flagName);
 	
 	//数据帧改变时发送信号
+	// frameChanged(int)，帧改变
 	connect(apngMovie, SIGNAL(frameChanged(int)), this, SLOT(onEmotionImageFrameChange(int)));
+
 	apngMovie->start();
 	updateGeometry();
 }

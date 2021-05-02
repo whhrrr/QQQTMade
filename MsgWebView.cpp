@@ -58,7 +58,8 @@ MsgWebView::MsgWebView(QWidget* parent) :QWebEngineView(parent)
 	// 构造一个网页，并 设置为 当前的网页
 	MsgWebPage* page = new MsgWebPage(this);
 	setPage(page);
-	
+	//通道
+
 	QWebChannel* channel = new QWebChannel(this);
 	m_msgHtmlObj = new MsgHtmlObj(this);
 	channel->registerObject("external", m_msgHtmlObj);

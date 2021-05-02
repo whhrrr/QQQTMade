@@ -20,15 +20,15 @@ private slots:
 	void onItemDoubleClicked(QTreeWidgetItem* item, int column);
 private:
 	void initControl();//初始化控件
-	void initCompanyTalk();//初始化公司群聊天
-	void initPersonelTalk();//初始化人事部聊天
-	void initMarketTalk();//初始化市场部聊天
-	void initDevelopTalk();//初始化研发部聊天
+	void initTalkWindow();//初始化群聊
+	int getCompDepID();//获取公司成员ID号
+	void initGroupTalkStatus();	//初始化群聊状态
 	void initPtoPTalk();//初始化单独聊天
-	void addPeopleInfo(QTreeWidgetItem* pRootGroupItem);//添加名称
+	void addPeopleInfo(QTreeWidgetItem* pRootGroupItem,int employeeID);//添加名称
 private:
 	Ui::TalkWindow ui;
 	QString m_talkId;//保存当前聊天窗口ID
+	bool m_isGroupTalk;//是否为群聊
 	//GroupType m_groupType;//保存分组类型
 	QMap<QTreeWidgetItem*, QString> m_groupPeopleMap;//所有分组联系人姓名
 

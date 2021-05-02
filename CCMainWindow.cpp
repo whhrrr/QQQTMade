@@ -398,7 +398,7 @@ void CCMainWindow::addCompanyDeps(QTreeWidgetItem* pRootGroupItem, int DepID)
     strDepName = queryDepName.value(0).toString();
 
     ContactItem* pContactItem = new ContactItem(ui.treeWidget);
-    pContactItem->setHeadPixmap(getRoundImage(QPixmap(":/Resources/MainWindow/girl.png"),pix,pContactItem->getHeadLabelSize()));
+    pContactItem->setHeadPixmap(getRoundImage(groupPix,pix,pContactItem->getHeadLabelSize()));//ÉèÖÃÍ·Ïñ
     pContactItem->setUserName(strDepName);
 
     pRootGroupItem->addChild(pChild);
