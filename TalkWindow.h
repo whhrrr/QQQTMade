@@ -14,6 +14,7 @@ public:
 public:
 	void addEmotionImage(int emotionNum);
 	void setWindowName(const QString& name);//ÉèÖÃ´°¿ÚÃû³Æ
+	QString getTalkId();
 
 private slots:
 	void onSendBtnClicked(bool );

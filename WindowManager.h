@@ -17,6 +17,7 @@ public:
 	void addWindowName(const QString& qsWindowName, QWidget* qWidget);
 
 	static WindowManager* getInstance();//获取实例
+	TalkWindowShell* getTalkWindowShell();//获取m_talkWindowshell
 	void addNewTalkWindow(const QString& uid);
 private:
 	TalkWindowShell* m_talkWindowshell;

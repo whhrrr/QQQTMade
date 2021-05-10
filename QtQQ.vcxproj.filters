@@ -27,9 +27,6 @@
     <QtRcc Include="CCMainWindow.qrc">
       <Filter>Resource Files</Filter>
     </QtRcc>
-    <QtUic Include="CCMainWindow.ui">
-      <Filter>Resource Files</Filter>
-    </QtUic>
     <QtMoc Include="CCMainWindow.h">
       <Filter>Header Files</Filter>
     </QtMoc>
@@ -180,6 +177,9 @@
       <Filter>Form Files</Filter>
     </QtUic>
     <QtUic Include="TalkWindow.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+    <QtUic Include="CCMainWindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
   </ItemGroup>

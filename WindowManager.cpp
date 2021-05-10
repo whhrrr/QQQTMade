@@ -46,6 +46,11 @@ WindowManager* WindowManager::getInstance()
 	return theInstance;
 }
 
+TalkWindowShell* WindowManager::getTalkWindowShell()
+{
+	return this->m_talkWindowshell;
+}
+
 void WindowManager::addNewTalkWindow(const QString& uid)
 {
 	if (m_talkWindowshell == nullptr) 

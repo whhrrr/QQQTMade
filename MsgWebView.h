@@ -52,15 +52,17 @@ class MsgWebView : public QWebEngineView
 
 public:
 	MsgWebView(QWidget *parent);
-	~MsgWebView();
+	~MsgWebView();//external0 external_xxx
 public:
-	void appendMsg(const QString& html);//字符串里面为HTML格式用于显示网页
+	void appendMsg(const QString& html,QString strObj = "0");//字符串里面为HTML格式用于显示网页
 
 private:
 	QList<QStringList> parseHtml(const QString& html);//解析Html格式字符串。返回为字符串链表
 	//Qt中所有DOM节点(属性、说明、文本等)都可以使用QDomNode表示
 	QList<QStringList> parseDocNode(const QDomNode& node);//解析节点
-
+signals:
+	//发送信息
+	void signalSendMsg(QString& strData, int& msgType, QString sFile = "");
 private:
 	MsgHtmlObj* m_msgHtmlObj;
 };

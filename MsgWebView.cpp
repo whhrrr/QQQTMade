@@ -1,9 +1,14 @@
 #include "MsgWebView.h"
+#include "TalkWindowShell.h"
+#include "WindowManager.h"
+
 #include <QFile>
 #include <QMessageBox>
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QWebChannel>
+
+
 MsgHtmlObj::MsgHtmlObj(QObject* parent) :QObject(parent)
 {
 	initHtmlTmpl();
@@ -65,6 +70,9 @@ MsgWebView::MsgWebView(QWidget* parent) :QWebEngineView(parent)
 	channel->registerObject("external", m_msgHtmlObj);
 	// 设置当前网页，网络通道
 	this->page()->setWebChannel(channel);
+	TalkWindowShell* talkWindowShell = WindowManager::getInstance()->getTalkWindowShell();
+	//响应this 窗口，发送signalSendMsg信息，talkWindowShell接受信号对象，
+	connect(this, &MsgWebView::signalSendMsg, talkWindowShell, &TalkWindowShell::updateSendTcpMsg);
 	//初始化收信息网页页面
 	this->load(QUrl("qrc:/Resources/MainWindow/MsgHtml/msgTmpl.html"));
 }
@@ -73,11 +81,18 @@ MsgWebView::~MsgWebView()
 {
 }
 
-void MsgWebView::appendMsg(const QString& html)
+void MsgWebView::appendMsg(const QString& html, QString strObj)
 {
 	QJsonObject msgObj;
 	QString qsMsg;
 	const QList<QStringList> msgList = parseHtml(html);//解析HTML
+
+	int imageNum = 0;//发送表情数量
+	int msgType = 1;//信息类型 0 表情、1 文本、2 文件
+	bool isImageMsg = false;
+	QString strData;//发送的数据
+	
+
 
 	for (int i = 0; i < msgList.size(); i++) 
 	{
@@ -89,6 +104,31 @@ void MsgWebView::appendMsg(const QString& html)
 			//是img文件
 			QString imagePath = msgList.at(i).at(1);
 			QPixmap pixmap;
+			
+			//获取表情名称的位置
+			QString strEmotionPath = "qrc:/Resources/MainWindow/emotion/";
+			int pos = strEmotionPath.size();
+			isImageMsg = true;
+			
+			QString strEmotionName = imagePath.mid(pos);//截取图片名称
+			strEmotionName.replace(".png", "");//获取表情名称
+			//根据表情名称的长度进行设置表情数据，不足三位则补足
+			int emotionNameL = strEmotionName.length();
+			if (emotionNameL == 1) {
+				//补足三位 + 表情名称
+				strData += "00" + strEmotionName;
+			}
+			else if (emotionNameL == 2) 
+			{
+				strData += "0" + strEmotionName;
+			}
+			else if (emotionNameL == 3) 
+			{
+				strData += strEmotionName;
+			}
+			msgType = 0;//表情信息
+			imageNum++;//发送表情个数增加
+
 			// 判断最左边的 3个字符，是否为 qrc
 			if (imagePath.left(3) == "qrc") // 假设路径为 qrc:/MainWindow/xxx
 			{
@@ -110,6 +150,7 @@ void MsgWebView::appendMsg(const QString& html)
 		else if (msgList.at(i).at(0) == "text") 
 		{
 			qsMsg += msgList.at(i).at(1);
+			strData = qsMsg;
 		}
 	}
 	// 插入到 Json 对象中，是键值对，
@@ -121,7 +162,19 @@ void MsgWebView::appendMsg(const QString& html)
 	// 再转换成 Json 文档，并且 要转成 UTF-8 的文档
 	// QJsonDocument::Compact，紧凑的意思
 	const QString& Msg = QJsonDocument(msgObj).toJson(QJsonDocument::Compact);
-	this->page()->runJavaScript(QString("appendHtml(%1)").arg(Msg));//解析运行JavaScript脚本
+	if (strObj == "0") //发信息
+	{
+		this->page()->runJavaScript(QString("appendHtml0(%1)").arg(Msg));//解析运行JavaScript脚本
+		if (isImageMsg) 
+		{
+			strData = QString::number(imageNum) + "images" + strData;
+		}
+		emit signalSendMsg(strData, msgType);//发送数据以及数据类型
+	}
+	else //来信
+	{
+		this->page()->runJavaScript(QString("recvHtml_%1(%2)").arg(strObj).arg(Msg));//解析运行JavaScript脚本
+	}
 }
 
 QList<QStringList> MsgWebView::parseHtml(const QString& html)
