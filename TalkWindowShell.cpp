@@ -6,8 +6,10 @@
 #include <QSqlQueryModel>
 #include <QMessageBox>
 #include <QFile>
+#include <QSqlQuery>
 
 const int gtcpPort = 8888;//端口
+const int gudpPort = 6666;
 
 extern QString gLoginEmployeeID;
 TalkWindowShell::TalkWindowShell(QWidget *parent)
@@ -17,6 +19,7 @@ TalkWindowShell::TalkWindowShell(QWidget *parent)
 	setAttribute(Qt::WA_DeleteOnClose);
 	initControl();
 	initTcpSocket();
+	initUdpSocket();
 	QFile file(":/Resources/MainWindow/MsgHtml/msgtmpl.js");
 	if (!file.size()) //如果文件为空，进行更新数据
 	{
@@ -113,6 +116,93 @@ void TalkWindowShell::onEmotionItemClicked(int emotionNum)
 		curTalkWindow->addEmotionImage(emotionNum);
 	}
 }
+/*
+*数据包格式：
+* 文本数据包格式：文本数据包格式：群聊标志 + 发信息员工QQ号 + 收信息员工QQ号(群QQ号) + 信息类型(1) + 数据长度 + 数据
+* 表情数据包格式：群聊标志 + 发信息员工QQ号 + 收信息员工QQ号(群QQ号) + 信息类型(0) + 表情个数 + images + 表情名称
+* 文件数据包格式：群聊标志 + 发信息员工QQ号 + 收信息员工QQ号(群QQ号) + 信息类型(2) + 文件字节数 + bytes + 文件名 +data_begin + 文件数据
+*/
+void TalkWindowShell::ProcessPendingData()
+{
+	//检查是否有未处理数据
+	while (m_udpReceiver->hasPendingDatagrams()) 
+	{
+		const static int groupFlagWidth = 1;//群聊标志占位
+		const static int groupWidth = 4;//群qq号宽度
+		const static int employeeWidth = 5;//员工标志占位
+		const static int msgTypeWidth = 1;//信息类型宽度
+		const static int msgLengthWidth = 5;//文本信息长度
+		const static int pictureWidth = 3;//表情图片宽度
+
+		//读取UDP数据
+		QByteArray btData;
+		btData.resize(m_udpReceiver->pendingDatagramSize());
+		m_udpReceiver->readDatagram(btData.data(), btData.size());
+
+		QString strData = btData.data();
+		QString strWindowID;//聊天窗口ID
+		QString strSendEmployeeID, strRecevieEmployeeID;//发送及接收端员工编号
+		QString strMsg;//数据
+		int msgLen;//数据长度
+		int msgType;//数据类型
+
+		strSendEmployeeID = strData.mid(groupFlagWidth, employeeWidth);
+		//自己发的信息不做处理
+		if (strSendEmployeeID == gLoginEmployeeID) {
+			return;
+		}
+
+		if (btData[0] == '1') //群聊
+		{
+			strWindowID = strData.mid(groupFlagWidth + employeeWidth, groupWidth);//获取发送端口信息
+			QChar cMsgType = btData[groupFlagWidth + employeeWidth + groupWidth];
+			if (cMsgType == '1') //文本信息
+			{
+				msgType = 1;
+				msgLen = strData.mid(groupFlagWidth + employeeWidth + groupWidth + msgTypeWidth, msgLengthWidth)
+					.toInt();//获取信息长度
+				//获取文本信息
+				strMsg = strData.mid(groupFlagWidth + employeeWidth + groupWidth + msgTypeWidth + msgLengthWidth, msgLen);
+
+
+			}else if(cMsgType == '0')//表情信息
+			{
+				msgType = 0;
+				int posImages = strData.indexOf("images");
+				strMsg = strData.right(strData.length() - posImages - QString("images").length());
+
+
+			}else if(cMsgType == '2')//文件信息
+			{
+				msgType = 2;
+				int bytesWidth = QString("bytes").length();
+				int posBytes = strData.indexOf("bytes");
+				int posData_begin = strData.indexOf("data_begin");
+				//获取文件名称
+				QString fileName = strData.mid(posBytes + bytesWidth, posData_begin - posBytes - bytesWidth);
+				//文件内容获取
+				int dataLengthWidth;
+				int posData = posData_begin + QString("data_begin").length();
+				strMsg = strData.mid(posData);
+				//根据employeeID 获取发送者姓名
+				QString sender;
+				int employeeID = strSendEmployeeID.toInt();
+				QSqlQuery queryGroupName(QString("SELECT employee_name FROM tab_employees WHERE employeeID = %1")
+					.arg(employeeID));
+				queryGroupName.exec();
+
+				if (queryGroupName.first()) 
+				{
+					sender = queryGroupName.value(0).toString();
+				}
+				//接收文件后续操作
+			}
+		}
+		else 
+		{}
+	}
+}
+
 //文本数据包格式：群聊标志 + 发信息员工QQ号 + 收信息员工QQ号(群QQ号) + 信息类型 + 数据长度 + 数据
 //表情数据包格式：群聊标志 + 发信息员工QQ号 + 收信息员工QQ号(群QQ号) + 信息类型 + 表情个数 + images + 数据
 /* msgType 0表情  1文本信息  2文件信息*/
@@ -226,6 +316,21 @@ void TalkWindowShell::initTcpSocket()
 	m_tcpClientSocket = new QTcpSocket(this);
 	//参数类型(IP地址，端口号) 建立Tcp通信
 	m_tcpClientSocket->connectToHost("127.0.0.1", gtcpPort);
+}
+
+void TalkWindowShell::initUdpSocket()
+{
+	m_udpReceiver = new QUdpSocket(this);
+	for (quint16 port = gudpPort; port < gudpPort + 200; ++port)
+	{
+		//如果绑定成功
+		if (m_udpReceiver->bind(port, QUdpSocket::ShareAddress)) 
+		{
+			break;
+		}
+		connect(m_udpReceiver, &QUdpSocket::readyRead, this, &TalkWindowShell::ProcessPendingData);
+
+	}
 }
 
 void TalkWindowShell::getEmployeesID(QStringList& employeesIDList)

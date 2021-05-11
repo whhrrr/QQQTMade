@@ -8,6 +8,7 @@
 #include <QWidget>
 #include <QMap>
 #include <QTcpSocket>
+#include <QUdpSocket>
 #include "ui_TalkWindowShell.h"
 
 class QListWidgetItem;
@@ -45,11 +46,15 @@ private slots:
 	void onTalkWindowItemClicked(QListWidgetItem* item);
 	//选择表情
 	void onEmotionItemClicked(int emotionNum);
+	//处理UDP广播收到的数据
+	void ProcessPendingData();
 private:
 	//初始化控件
 	void initControl();
 	//初始化Tcp
 	void initTcpSocket();
+	//初始化Udp
+	void initUdpSocket();
 	//获取所有员工qq号
 	void getEmployeesID(QStringList& employeesIDList);
 	// 写文件
@@ -60,4 +65,5 @@ private:
 	EmotionWindow* m_emotionWindow;//表情窗口
 private:
 	QTcpSocket* m_tcpClientSocket;	//客户端Tcp
+	QUdpSocket* m_udpReceiver;//UDP接收端
 };

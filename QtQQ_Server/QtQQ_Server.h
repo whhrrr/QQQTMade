@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QtWidgets/QDialog>
-#include<QSqlQueryModel>
-
+#include <QSqlQueryModel>
+#include <QUdpSocket>
 
 #include "ui_QtQQ_Server.h"
 #include "TcpServer.h"
@@ -16,6 +16,8 @@ public:
 private:
     //初始化TcpSocket
     void initTcpSocket();
+    //初始化UDPSocket
+    void initUdpSocket();
     //初始化组合框数据
     void initComboBoxData();
     //连接数据库
@@ -38,15 +40,21 @@ private slots:
     void on_queryIDBtn_clicked();
     //注销员工按钮槽函数实现
     void on_logoutBtn_clicked();
+    //选择文件按钮selectPictureBtn槽函数实现
+    void on_selectPictureBtn_clicked();
+    //新增员工按钮槽函数实现
+    void on_addBtn_clicked();
 private:
-    TcpServer* m_tcpServer;
-
+    TcpServer* m_tcpServer;//TCP服务端
+    QUdpSocket* m_udpSender;//UDP广播
+    
     //定时刷新数据
     QTimer* m_timer;
 
     int m_depID;//部门编号
     int m_employeeID;//员工编号
     int m_compDepID;      //公司群QQ号
+    QString m_pixPath;  //新增员工图片路径
     QMap<QString, QString> m_statusMap;//状态映射
     QMap<QString, QString> m_depNameMap;//部门映射
     QMap<QString, QString> m_onlineMap;//在线映射
