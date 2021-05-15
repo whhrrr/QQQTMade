@@ -3,6 +3,8 @@
 #include "ContactItem.h"
 #include "CommonUtils.h"
 #include "WindowManager.h"
+#include "SendFile.h"
+
 #include <QFile>
 #include <QMessageBox>
 #include <QToolTip>
@@ -38,6 +40,11 @@ void TalkWindow::setWindowName(const QString& name)
 QString TalkWindow::getTalkId()
 {
 	return this->m_talkId;
+}
+void TalkWindow::onFileOpenBtnClicked(bool)
+{
+	SendFile* sendFile = new SendFile(this);
+	sendFile->show();
 }
 void TalkWindow::onSendBtnClicked(bool)
 {
@@ -119,6 +126,8 @@ void TalkWindow::initControl()
 	// ·¢ËÍ
 	connect(ui.sendBtn, SIGNAL(clicked(bool)), this, SLOT(onSendBtnClicked(bool)));
 	connect(ui.treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(onItemDoubleClicked(QTreeWidgetItem*, int)));
+	connect(ui.fileopenBtn, SIGNAL(clicked(bool)), this, SLOT(onFileOpenBtnClicked(bool)));
+	
 	if (m_isGroupTalk) 
 	{
 		initTalkWindow();

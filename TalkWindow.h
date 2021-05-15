@@ -17,7 +17,8 @@ public:
 	QString getTalkId();
 
 private slots:
-	void onSendBtnClicked(bool );
+	void onFileOpenBtnClicked(bool);
+	void onSendBtnClicked(bool);
 	void onItemDoubleClicked(QTreeWidgetItem* item, int column);
 private:
 	void initControl();//³õÊ¼»¯¿Ø¼þ
