@@ -33,4 +33,6 @@ private:
 	//GroupType m_groupType;//保存分组类型
 	QMap<QTreeWidgetItem*, QString> m_groupPeopleMap;//所有分组联系人姓名
 
+	friend class TalkWindowShell;
+
 };

@@ -18,8 +18,10 @@ public:
 
 	static WindowManager* getInstance();//获取实例
 	TalkWindowShell* getTalkWindowShell();//获取m_talkWindowshell
+	QString	 getCreatingTalkID();//获取正在创建的聊天窗口的ID
 	void addNewTalkWindow(const QString& uid);
 private:
 	TalkWindowShell* m_talkWindowshell;
 	QMap<QString, QWidget*> m_windowMap;
+	QString m_strCreatingTalkId = "";//正在创建的聊天窗口
 };

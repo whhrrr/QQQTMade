@@ -43,6 +43,8 @@ void TalkWindow::onSendBtnClicked(bool)
 {
 	if (ui.textEdit->toPlainText().isEmpty())//转换为纯文本,判断是否为空
 	{
+		// 显示文本，showText(坐标，字符串文本，窗口，绘制矩形，显示2000毫秒)
+			// 先给个坐标，是一个相对位置，要转成 全局坐标位置
 		QToolTip::showText(this->mapToGlobal(QPoint(630, 660))
 			, QString::fromLocal8Bit("发送信息不能为空！"), this, QRect(0, 0, 120, 100), 2000);//显示文本(提示)
 		return;
@@ -86,6 +88,17 @@ void TalkWindow::onItemDoubleClicked(QTreeWidgetItem* item, int column)
 	bool bIsChild = item->data(0, Qt::UserRole).toBool();
 	if (bIsChild)
 	{
+		/*
+		 获取实例，添加新窗口（窗口ID，分组，人名）
+		 第一个参数是 ID，不能写 已经有的当前窗口ID，要写 新传入的窗口ID
+		 所以要通过 item调用data方法，再转成字符串
+		 ( 不太明白，为什么不是用 Qt::UserRole ，而是用 Qt::UserRole+1 )
+
+		 PTOP，才是人跟人私聊，不能传入当前群聊分组，就是默认的 m_groupType
+
+		 映射中的 m_groupPeoMap 值，调用 value方法，获取人名
+		 value() 方法，里面的参数 ，就是当前的 Key，就是当前 Item的项
+		*/
 		QString strPeopleName = m_groupPeopleMap.value(item);//获取人名
 		WindowManager::getInstance()->addNewTalkWindow(item->data(0, Qt::UserRole + 1).toString());
 	}
@@ -103,6 +116,7 @@ void TalkWindow::initControl()
 	connect(ui.sysclose, SIGNAL(clicked(bool)), parent(), SLOT(onShowClose(bool)));
 	connect(ui.closeBtn, SIGNAL(clicked(bool)), parent(), SLOT(onShowClose(bool)));
 	connect(ui.faceBtn, SIGNAL(clicked(bool)), parent(), SLOT(onEmotionBtnClicked(bool)));
+	// 发送
 	connect(ui.sendBtn, SIGNAL(clicked(bool)), this, SLOT(onSendBtnClicked(bool)));
 	connect(ui.treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(onItemDoubleClicked(QTreeWidgetItem*, int)));
 	if (m_isGroupTalk) 
@@ -128,7 +142,7 @@ void TalkWindow::initTalkWindow()
 
 	//当前聊天群组名
 	QString strGroupName;
-	QSqlQuery queryGroupName(QString("SELECT department_name FROM tab_department WHERE departmentID = % 1").arg(m_talkId));
+	QSqlQuery queryGroupName(QString("SELECT department_name FROM tab_department WHERE departmentID = %1").arg(m_talkId));
 	queryGroupName.exec();//执行数据库操作
 	if (queryGroupName.next()) 
 	{
@@ -141,8 +155,7 @@ void TalkWindow::initTalkWindow()
 	}
 	else 
 	{
-		queryEmployeeModel.setQuery(QString("SELECT employeeID FROM tab_employees WHERE status = 1 AND departmentID = %1")
-			.arg(m_talkId));
+		queryEmployeeModel.setQuery(QString("SELECT employeeID FROM tab_employees WHERE status = 1 AND departmentID = %1").arg(m_talkId));
 	}
 	int nEmployeeNum = queryEmployeeModel.rowCount();//获取当前结果行数
 
@@ -234,6 +247,7 @@ void TalkWindow::addPeopleInfo(QTreeWidgetItem* pRootGroupItem,int employeeID)
 	strPicturePath = queryInfoModel.data(pictureIndex).toString();
 	QImage imageHead;
 	imageHead.load(strPicturePath);
+
 
 	pContactItem->setHeadPixmap(CommonUtils::getRoundImage(QPixmap::fromImage(imageHead), pix1, pContactItem->getHeadLabelSize()));
 	pContactItem->setUserName(strName);

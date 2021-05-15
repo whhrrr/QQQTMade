@@ -1,69 +1,59 @@
 #pragma once
 
-#include "BasicWindow.h"
-#include "EmotionWindow.h"
-#include "TalkWindow.h"
-#include "TalkWindowItem.h"
-
-#include <QWidget>
-#include <QMap>
+#include "basicwindow.h"
+#include "ui_TalkWindowShell.h"
+#include <qmap.h>
 #include <QTcpSocket>
 #include <QUdpSocket>
-#include "ui_TalkWindowShell.h"
 
-class QListWidgetItem;
 class TalkWindow;
-enum GroupType {
-	COMPANY = 0,//公司群
-	PERSONELGROUP,//人事部
-	DEVELOPMENTGROUP,//研发部
-	MARKETGROUP,//市场部
-	PTOP		//单独聊天
-};
+class TalkWindowItem;
+class QListWidgetItem;
+class EmotionWindow;
+
+const int gtcpPort = 8888;
+
 class TalkWindowShell : public BasicWindow
 {
 	Q_OBJECT
 
 public:
-	TalkWindowShell(QWidget *parent = Q_NULLPTR);
+	TalkWindowShell(QWidget* parent = Q_NULLPTR);
 	~TalkWindowShell();
 
 public:
-	//添加新的聊天窗口(两种情况:公司聊天或同事一对一聊天)
+	//添加新的聊天窗口
 	void addTalkWindow(TalkWindow* talkWindow, TalkWindowItem* talkWindowItem, const QString& uid);
+
 	//设置当前聊天窗口
 	void setCurrentWidget(QWidget* widget);
 
-	const QMap<QListWidgetItem*, QWidget*>& getTalkWindowItemMap() const;
+	const QMap<QListWidgetItem*, QWidget*>& getTalkWindowItemMap()const;
+
+private:
+	void initControl();		//初始化控件
+	void initTcpSocket();	//初始化TCP
+	void initUdpSocket();	//初始化UDP
+	void getEmployeesID(QStringList& employeesList);	//获取所有员工QQ号
+	bool createJSFile(QStringList& employeesList);
+	void handleReceivedMsg(int senderEmployeeID, int msgType, QString strMsg);
 
 public slots:
-	//表情按钮点击后执行槽函数
-	void onEmotionBtnClicked(bool);
-	//更新发送Tcp数据
-	void updateSendTcpMsg(QString& strData,int& msgType,QString fileName = "");
+	void onEmotionBtnClicked(bool);//表情按钮点击后执行的槽函数
+
+	//客户端发送Tcp数据（数据，数据类型，文件）
+	void updateSendTcpMsg(QString& strData, int& msgType, QString fileName = "");
 private slots:
-	//左边聊天窗口点击执行槽函数
-	void onTalkWindowItemClicked(QListWidgetItem* item);
-	//选择表情
-	void onEmotionItemClicked(int emotionNum);
-	//处理UDP广播收到的数据
-	void ProcessPendingData();
-private:
-	//初始化控件
-	void initControl();
-	//初始化Tcp
-	void initTcpSocket();
-	//初始化Udp
-	void initUdpSocket();
-	//获取所有员工qq号
-	void getEmployeesID(QStringList& employeesIDList);
-	// 写文件
-	bool createJSFile(QStringList &employeesList);
+	void onTalkWindowItemClicked(QListWidgetItem* item);//左侧列表点击后执行的槽函数
+	void onEmotionItemClicked(int emotionNum);	//表情被选中
+	void processPendingData();//处理UDP广播收到的数据
+
 private:
 	Ui::TalkWindowClass ui;
-	QMap<QListWidgetItem*, QWidget*> m_talkwindowItemMap;//打开聊天窗口映射
-	EmotionWindow* m_emotionWindow;//表情窗口
+	QMap<QListWidgetItem*, QWidget*> m_talkwindowItemMap;//打开的聊天窗口
+	EmotionWindow* m_emotionWindow;	//表情窗口
+
 private:
-	QTcpSocket* m_tcpClientSocket;	//客户端Tcp
-	QUdpSocket* m_udpReceiver;//UDP接收端
+	QTcpSocket* m_tcpClientSocket;	//Tcp客户端
+	QUdpSocket* m_udpReceiver;		//udp接收端
 };

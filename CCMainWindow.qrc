@@ -357,7 +357,9 @@
         <file>Resources/MainWindow/MsgHtml/msgrightTmpl.html</file>
         <file>Resources/MainWindow/MsgHtml/msgTmpl.html</file>
         <file>Resources/MainWindow/MsgHtml/msgtmpl.js</file>
+        <file>Resources/MainWindow/MsgHtml/msgtmpl.txt</file>
         <file>Resources/MainWindow/MsgHtml/qwebchannel.js</file>
+        <file>Resources/MainWindow/MsgHtml/recvHtml.txt</file>
         <file>Resources/MainWindow/MsgHtml/ui.css</file>
     </qresource>
 </RCC>

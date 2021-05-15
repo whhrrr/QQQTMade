@@ -8,6 +8,7 @@ var external_10006 = null;
 var external_10007 = null;
 var external_10008 = null;
 var external_10009 = null;
+var external_10010 = null;
 
 
 
@@ -33,7 +34,9 @@ external_10006 = channel.objects.external_10006;
 external_10007 = channel.objects.external_10007;
 external_10008 = channel.objects.external_10008;
 external_10009 = channel.objects.external_10009;
+external_10010 = channel.objects.external_10010;
 
+		
 	}
 );
 
@@ -76,5 +79,9 @@ function recvHtml_10008(msg){
 };
 function recvHtml_10009(msg){
 	$("#placeholder").append(external_10009.msgLHtmlTmpl.format(msg));
+	window.scrollTo(0,document.body.scrollHeight); ;  
+};
+function recvHtml_10010(msg){
+	$("#placeholder").append(external_10010.msgLHtmlTmpl.format(msg));
 	window.scrollTo(0,document.body.scrollHeight); ;  
 };

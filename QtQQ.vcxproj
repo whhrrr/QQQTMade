@@ -93,7 +93,12 @@
     <ClCompile Include="CustomMenu.cpp" />
     <ClCompile Include="EmotionLabelItem.cpp" />
     <ClCompile Include="EmotionWindow.cpp" />
-    <ClCompile Include="MsgWebView.cpp" />
+    <ClCompile Include="MsgWebView.cpp">
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).moc</QtMocFileName>
+    </ClCompile>
     <ClCompile Include="NotifyManager.cpp" />
     <ClCompile Include="QClickLabel.cpp" />
     <ClCompile Include="QMsgTextEdit.cpp" />

@@ -16,6 +16,7 @@ new QWebChannel(qt.webChannelTransport,
 	function(channel) {
 		external0 = channel.objects.external0;
 		external = channel.objects.external;
+		
 	}
 );
 

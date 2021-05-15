@@ -51,6 +51,11 @@ TalkWindowShell* WindowManager::getTalkWindowShell()
 	return this->m_talkWindowshell;
 }
 
+QString WindowManager::getCreatingTalkID()
+{
+	return m_strCreatingTalkId;
+}
+
 void WindowManager::addNewTalkWindow(const QString& uid)
 {
 	if (m_talkWindowshell == nullptr) 
@@ -69,8 +74,10 @@ void WindowManager::addNewTalkWindow(const QString& uid)
 	QWidget* widget = findWindowName(uid);
 	if (!widget)
 	{
+		m_strCreatingTalkId = uid;
 		TalkWindow* talkWindow = new TalkWindow(m_talkWindowshell,uid);
 		TalkWindowItem* talkWindowItem = new TalkWindowItem(talkWindow);
+		m_strCreatingTalkId = "";
 
 		//判断是群聊还是单聊
 		QSqlQueryModel sqlDepModel;

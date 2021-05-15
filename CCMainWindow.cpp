@@ -8,6 +8,7 @@
 #include <QMouseEvent>
 #include <QApplication>
 #include <QSqlQuery>
+#include <QPainter>
 
 #include "WindowManager.h"
 #include "SkinWindow.h"
@@ -17,6 +18,7 @@
 #include "ContactItem.h"
 #include "TalkWindowShell.h"
 extern QString gLoginEmployeeID;//全局变量，保存登录者部门编号
+QString gstrLoginHeadPath;
 
 class CCMainCustomProxyStyle:public QProxyStyle 
 {
@@ -25,6 +27,8 @@ public:
     virtual void drawPrimitive(PrimitiveElement element,const QStyleOption* option,
     QPainter* painter,const QWidget* widget = nullptr) const 
     {
+        //针对，边框获取焦点时，进行处理
+        //如果元素等于边框矩形，就直接返回，不绘制它
         if (element == PE_FrameFocusRect) 
         {
             return;
@@ -153,7 +157,7 @@ QString CCMainWindow::getHeadPicturePath()
 
         strPicPath = queryPic.value(0).toString();
     }
-
+    gstrLoginHeadPath = strPicPath;
     return strPicPath;
 }
 void CCMainWindow::setUserName(const QString& username)//设置用户名称
@@ -308,14 +312,12 @@ void CCMainWindow::initContactTree()
     pRootGroupItem->setData(0, Qt::UserRole, 0);//根项数据设为0
     RootContatItem* pItemName = new RootContatItem(true, ui.treeWidget);
     //获取公司部门ID
-    QSqlQuery queryComDepID(QString("SELECT departmentID FROM tab_department WHERE department_name = \"%1\"")
-        .arg(QString::fromLocal8Bit("公司群")));
+    QSqlQuery queryComDepID(QString("SELECT departmentID FROM tab_department WHERE department_name = '%1'").arg(QString::fromLocal8Bit("公司群")));
     queryComDepID.exec();//执行sql语句
     queryComDepID.first();
-    int ComDepID = queryComDepID.value(0).toInt();
+    int ComDepID = queryComDepID.value(0).toInt();//指向结果集第一条
     //获得登陆者所在部门ID
-    QSqlQuery querySelfDepID(QString("SELECT departmentID FROM tab_employees WHERE employeeID = %1")
-        .arg(gLoginEmployeeID));
+    QSqlQuery querySelfDepID(QString("SELECT departmentID FROM tab_employees WHERE employeeID = %1").arg(gLoginEmployeeID));
     querySelfDepID.exec();//执行sql语句
     querySelfDepID.first();
     int SelfDepID = querySelfDepID.value(0).toInt();
